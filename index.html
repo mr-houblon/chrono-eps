@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Chrono EPS">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png"> <title>Gestion Course EPS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .import-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .btn {
+            padding: 16px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            min-height: 56px;
+            touch-action: manipulation;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .arrival-input-section {
+            margin-top: 20px;
+        }
+
+        #dossardInput {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            font-size: 32px;
+            border: 4px solid #667eea;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            touch-action: manipulation;
+        }
+
+        #dossardInput:focus {
+            outline: none;
+            border-color: #5568d3;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-box .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .derniere-arrivee {
+            background: #48bb78;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .classements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        thead {
+            background: #667eea;
+            color: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        tbody tr:hover {
+            background: #f7fafc;
+        }
+
+        .position {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .position-1 {
+            color: #ffd700;
+        }
+
+        .position-2 {
+            color: #c0c0c0;
+        }
+
+        .position-3 {
+            color: #cd7f32;
+        }
+
+        .classe-group {
+            background: #f7fafc;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .classe-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .alert-info {
+            background: #bee3f8;
+            color: #2c5282;
+            border-left: 4px solid #3182ce;
+        }
+
+        .alert-warning {
+            background: #feebc8;
+            color: #744210;
+            border-left: 4px solid #dd6b20;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #e53e3e;
+            animation: shake 0.5s;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #38a169;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            max-width: 90%;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast-error {
+            background: #fc8181;
+            color: white;
+        }
+
+        .toast-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .toast-warning {
+            background: #f6ad55;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .classements {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            /* Optimisation tablette */
+            .container {
+                max-width: 95%;
+            }
+
+            table {
+                font-size: 16px;
+            }
+
+            th, td {
+                padding: 14px;
+            }
+        }
+
+        @media (orientation: landscape) and (max-width: 1024px) {
+            /* Mode paysage tablette */
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏃‍♂️ Gestion Course EPS 🏃‍♀️</h1>
+
+        <!-- Section Import -->
+        <div class="card">
+            <h2>📂 Import des participants</h2>
+            <div class="alert alert-info">
+                <strong>Format CSV attendu :</strong> Dossard, Prénom, Nom, Genre, Classe<br>
+                Exemple : 1,Marie,Dupont,F,3A
+            </div>
+            <div class="import-section">
+                <div class="file-input-wrapper">
+                    <label for="csvFile" class="btn btn-primary">Choisir un fichier CSV</label>
+                    <input type="file" id="csvFile" accept=".csv">
+                </div>
+                <span id="fileName"></span>
+            </div>
+            <div id="importSuccess" class="alert alert-info hidden" style="margin-top: 15px;">
+                ✅ <span id="participantCount"></span> participants importés avec succès !
+            </div>
+        </div>
+
+        <!-- Section Enregistrement -->
+        <div class="card" id="recordSection" style="display: none;">
+            <h2>⏱️ Enregistrement des arrivées</h2>
+            
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                <div style="font-size: 1.2em; font-weight: bold;">Course en cours : <span id="courseActuelle">1</span></div>
+                <div style="font-size: 0.9em; opacity: 0.9; margin-top: 5px;">
+                    Arrivées dans cette course : <span id="arriveesCourseCourante">0</span>
+                </div>
+            </div>
+
+            <div class="arrival-input-section">
+                <label for="dossardInput" style="display: block; margin-bottom: 10px; font-weight: 600;">
+                    Numéro de dossard :
+                </label>
+                <input type="number" id="dossardInput" placeholder="Entrez le numéro" autofocus inputmode="numeric" pattern="[0-9]*">
+            </div>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="number" id="totalArrivees">0</div>
+                    <div class="label">Arrivées totales</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="totalParticipants">0</div>
+                    <div class="label">Participants total</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="pourcentage">0%</div>
+                    <div class="label">Progression</div>
+                </div>
+            </div>
+
+            <div id="derniereArrivee" class="derniere-arrivee hidden"></div>
+
+            <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-primary" id="btnNouvelleCourse">
+                    ➕ Nouvelle Course
+                </button>
+                <button class="btn btn-success" id="btnExport">
+                    📥 Exporter les résultats (CSV)
+                </button>
+                <button class="btn btn-danger" id="btnReset">
+                    🔄 Réinitialiser tout
+                </button>
+            </div>
+        </div>
+
+        <!-- Section Classements -->
+        <div class="classements" id="classementsSection" style="display: none;">
+            <!-- Classement des Meilleures Classes -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2>🏅 Classement des Meilleures Classes</h2>
+                <div class="alert alert-info">
+                    <strong>Système de scoring :</strong> Chaque élève rapporte des points égaux à son classement dans sa course (1er de course = 1 pt, 2ème = 2 pts, etc.). La classe avec le moins de points gagne !
+                </div>
+                <table id="classementClasses">
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Classe</th>
+                            <th>Élèves arrivés</th>
+                            <th>Total Points</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Classement Global -->
+            <div class="card">
+                <h2>🏆 Classement Global</h2>
+                <table id="classementGlobal">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Pos.</th>
+                            <th>Dossard</th>
+                            <th>Nom</th>
+                            <th>Classe</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Classement par Classe -->
+            <div class="card">
+                <h2>📊 Classement par Classe</h2>
+                <div id="classementParClasse"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Système de notification toast
+        function showToast(message, type = 'error') {
+            // Vibration sur mobile/tablette pour feedback haptique
+            if (navigator.vibrate) {
+                if (type === 'error') {
+                    navigator.vibrate([100, 50, 100]); // Double vibration pour erreur
+                } else if (type === 'success') {
+                    navigator.vibrate(50); // Courte vibration pour succès
+                }
+            }
+
+            // Créer le toast
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            // Retirer le toast après 3 secondes
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Validation du numéro de dossard
+        function validerDossard(dossard) {
+            if (!dossard || isNaN(dossard) || dossard <= 0) {
+                showToast('⚠️ Veuillez entrer un numéro valide', 'warning');
+                return false;
+            }
+
+            const participant = participants.find(p => p.dossard === dossard);
+            
+            if (!participant) {
+                showToast(`❌ Dossard #${dossard} introuvable`, 'error');
+                return false;
+            }
+
+            if (participant.course !== null) {
+                showToast(`⚠️ Dossard #${dossard} déjà enregistré (Course ${participant.course})`, 'warning');
+                return false;
+            }
+
+            return participant;
+        }
+
+        let participants = [];
+        let arrivees = [];
+        let courseActuelle = 1;
+        let arriveesParCourse = {}; // {courseNum: [participants]}
+
+        // Import du fichier CSV
+        document.getElementById('csvFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').textContent = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const csv = event.target.result;
+                parseCSV(csv);
+            };
+            reader.readAsText(file);
+        });
+
+        function parseCSV(csv) {
+            const lines = csv.split('\n').filter(line => line.trim());
+            participants = [];
+            let erreurs = [];
+
+            // Ignorer la première ligne si c'est un header
+            const startIndex = lines[0].toLowerCase().includes('dossard') ? 1 : 0;
+
+            for (let i = startIndex; i < lines.length; i++) {
+                const parts = lines[i].split(',').map(p => p.trim());
+                
+                // Validation du format
+                if (parts.length < 5) {
+                    erreurs.push(`Ligne ${i + 1}: Format incomplet (${parts.length} colonnes au lieu de 5)`);
+                    continue;
+                }
+
+                const dossard = parseInt(parts[0]);
+                if (isNaN(dossard) || dossard <= 0) {
+                    erreurs.push(`Ligne ${i + 1}: Numéro de dossard invalide (${parts[0]})`);
+                    continue;
+                }
+
+                // Vérifier les doublons de dossard
+                if (participants.find(p => p.dossard === dossard)) {
+                    erreurs.push(`Ligne ${i + 1}: Dossard #${dossard} en double`);
+                    continue;
+                }
+
+                participants.push({
+                    dossard: dossard,
+                    prenom: parts[1],
+                    nom: parts[2],
+                    genre: parts[3],
+                    classe: parts[4],
+                    course: null,
+                    positionDansCourse: null,
+                    classementClasse: null,
+                    points: null
+                });
+            }
+
+            // Afficher les erreurs s'il y en a
+            if (erreurs.length > 0) {
+                const message = `⚠️ ${erreurs.length} erreur(s) détectée(s) :\n\n` + erreurs.slice(0, 5).join('\n');
+                alert(message + (erreurs.length > 5 ? '\n\n... et d\'autres erreurs' : ''));
+            }
+
+            if (participants.length > 0) {
+                document.getElementById('importSuccess').classList.remove('hidden');
+                document.getElementById('participantCount').textContent = participants.length;
+                document.getElementById('recordSection').style.display = 'block';
+                document.getElementById('classementsSection').style.display = 'grid';
+                document.getElementById('totalParticipants').textContent = participants.length;
+                courseActuelle = 1;
+                arriveesParCourse = {};
+                document.getElementById('courseActuelle').textContent = courseActuelle;
+                document.getElementById('arriveesCourseCourante').textContent = '0';
+                updateClassements();
+                
+                showToast(`✅ ${participants.length} participants importés`, 'success');
+            } else {
+                showToast('❌ Aucun participant valide trouvé', 'error');
+            }
+        }
+
+        // Enregistrement des arrivées
+        document.getElementById('dossardInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const dossard = parseInt(this.value);
+                
+                const participant = validerDossard(dossard);
+                if (!participant) {
+                    this.value = '';
+                    // Animation d'erreur sur le champ
+                    this.style.animation = 'shake 0.5s';
+                    setTimeout(() => { this.style.animation = ''; }, 500);
+                    return;
+                }
+
+                // Enregistrer l'arrivée dans la course actuelle
+                participant.course = courseActuelle;
+                
+                // Initialiser le tableau pour cette course si nécessaire
+                if (!arriveesParCourse[courseActuelle]) {
+                    arriveesParCourse[courseActuelle] = [];
+                }
+                
+                arriveesParCourse[courseActuelle].push(participant);
+                participant.positionDansCourse = arriveesParCourse[courseActuelle].length;
+                participant.points = participant.positionDansCourse;
+                
+                arrivees.push(participant);
+
+                // Animation de succès sur le champ
+                this.style.animation = 'pulse 0.3s';
+                setTimeout(() => { this.style.animation = ''; }, 300);
+
+                // Notification de succès
+                showToast(`✅ #${dossard} - ${participant.prenom} ${participant.nom} (Pos. ${participant.positionDansCourse})`, 'success');
+
+                // Afficher la dernière arrivée
+                const derniereDiv = document.getElementById('derniereArrivee');
+                derniereDiv.classList.remove('hidden');
+                derniereDiv.innerHTML = `
+                    <strong>Dernière arrivée (Course ${courseActuelle}) :</strong> #${dossard} - ${participant.prenom} ${participant.nom} (${participant.classe}) - Position: ${participant.positionDansCourse}
+                `;
+
+                // Mettre à jour les stats
+                document.getElementById('totalArrivees').textContent = arrivees.length;
+                document.getElementById('arriveesCourseCourante').textContent = arriveesParCourse[courseActuelle].length;
+                const pourcentage = Math.round((arrivees.length / participants.length) * 100);
+                document.getElementById('pourcentage').textContent = pourcentage + '%';
+
+                // Mettre à jour les classements
+                updateClassements();
+
+                // Vider le champ
+                this.value = '';
+            }
+        });
+
+        function nouvelleCourse() {
+            console.log('nouvelleCourse appelée');
+            console.log('courseActuelle:', courseActuelle);
+            console.log('arriveesParCourse:', arriveesParCourse);
+            
+            if (!arriveesParCourse[courseActuelle] || arriveesParCourse[courseActuelle].length === 0) {
+                console.log('Aucune arrivée dans la course actuelle');
+                showToast('⚠️ Aucune arrivée dans la course actuelle !', 'warning');
+                return;
+            }
+
+            // Confirmation plus informative
+            const elevesPasCourse = participants.filter(p => p.course === null).length;
+            const message = `Démarrer la Course ${courseActuelle + 1} ?\n\n` +
+                          `Course ${courseActuelle} : ${arriveesParCourse[courseActuelle].length} arrivées\n` +
+                          `Élèves restants : ${elevesPasCourse}`;
+
+            console.log('Demande de confirmation');
+            const confirmation = confirm(message);
+            console.log('Confirmation:', confirmation);
+            
+            if (!confirmation) {
+                return;
+            }
+
+            courseActuelle++;
+            console.log('Nouvelle course:', courseActuelle);
+            
+            document.getElementById('courseActuelle').textContent = courseActuelle;
+            document.getElementById('arriveesCourseCourante').textContent = '0';
+            document.getElementById('derniereArrivee').classList.add('hidden');
+            
+            // Feedback visuel et tactile
+            showToast(`🏁 Course ${courseActuelle} démarrée !`, 'success');
+            
+            // Refocus sur le champ de saisie
+            setTimeout(() => {
+                document.getElementById('dossardInput').focus();
+            }, 100);
+        }
+
+        function updateClassements() {
+            // Récupérer tous les participants arrivés
+            const participantsArrivees = participants.filter(p => p.course !== null);
+
+            // Calculer les classements par classe
+            const classes = [...new Set(participants.map(p => p.classe))];
+            classes.forEach(classe => {
+                const participantsClasse = participants
+                    .filter(p => p.classe === classe && p.course !== null)
+                    .sort((a, b) => {
+                        if (a.course !== b.course) return a.course - b.course;
+                        return a.positionDansCourse - b.positionDansCourse;
+                    });
+                
+                participantsClasse.forEach((p, index) => {
+                    p.classementClasse = index + 1;
+                });
+            });
+
+            // Calculer le scoring par classe
+            const scoresClasses = [];
+            classes.forEach(classe => {
+                const participantsClasse = participants.filter(p => p.classe === classe && p.course !== null);
+                if (participantsClasse.length > 0) {
+                    const totalPoints = participantsClasse.reduce((sum, p) => sum + p.points, 0);
+                    scoresClasses.push({
+                        classe: classe,
+                        elevesArrivees: participantsClasse.length,
+                        totalPoints: totalPoints
+                    });
+                }
+            });
+
+            // Trier les classes par points (moins de points = meilleur)
+            scoresClasses.sort((a, b) => a.totalPoints - b.totalPoints);
+
+            // Afficher le classement des classes
+            const tableClasses = document.getElementById('classementClasses').getElementsByTagName('tbody')[0];
+            tableClasses.innerHTML = '';
+            scoresClasses.forEach((c, index) => {
+                const row = tableClasses.insertRow();
+                const posClass = (index + 1) <= 3 ? `position position-${index + 1}` : 'position';
+                row.innerHTML = `
+                    <td class="${posClass}">${index + 1}</td>
+                    <td><strong>${c.classe}</strong></td>
+                    <td>${c.elevesArrivees}</td>
+                    <td><strong>${c.totalPoints} pts</strong></td>
+                `;
+            });
+
+            // Afficher le classement global (groupé par course)
+            const tableGlobal = document.getElementById('classementGlobal').getElementsByTagName('tbody')[0];
+            tableGlobal.innerHTML = '';
+            
+            // Trier par course puis par position dans la course
+            const participantsTriees = [...participantsArrivees].sort((a, b) => {
+                if (a.course !== b.course) return a.course - b.course;
+                return a.positionDansCourse - b.positionDansCourse;
+            });
+
+            participantsTriees.forEach(p => {
+                const row = tableGlobal.insertRow();
+                const posClass = p.positionDansCourse <= 3 ? `position position-${p.positionDansCourse}` : 'position';
+                row.innerHTML = `
+                    <td><strong>C${p.course}</strong></td>
+                    <td class="${posClass}">${p.positionDansCourse}</td>
+                    <td>${p.dossard}</td>
+                    <td>${p.prenom} ${p.nom}</td>
+                    <td>${p.classe}</td>
+                `;
+            });
+
+            // Afficher les classements par classe
+            const divClasses = document.getElementById('classementParClasse');
+            divClasses.innerHTML = '';
+            
+            classes.sort().forEach(classe => {
+                const participantsClasse = participants
+                    .filter(p => p.classe === classe && p.course !== null)
+                    .sort((a, b) => {
+                        if (a.course !== b.course) return a.course - b.course;
+                        return a.positionDansCourse - b.positionDansCourse;
+                    });
+
+                if (participantsClasse.length === 0) return;
+
+                const classeDiv = document.createElement('div');
+                classeDiv.className = 'classe-group';
+                
+                let html = `<div class="classe-title">Classe ${classe}</div>`;
+                html += '<table><thead><tr><th>Course</th><th>Pos.</th><th>Dossard</th><th>Nom</th></tr></thead><tbody>';
+                
+                participantsClasse.forEach(p => {
+                    const posClass = p.classementClasse <= 3 ? `position position-${p.classementClasse}` : 'position';
+                    html += `
+                        <tr>
+                            <td><strong>C${p.course}</strong></td>
+                            <td class="${posClass}">${p.classementClasse}</td>
+                            <td>${p.dossard}</td>
+                            <td>${p.prenom} ${p.nom}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                classeDiv.innerHTML = html;
+                divClasses.appendChild(classeDiv);
+            });
+        }
+
+        function exportResults() {
+            if (arrivees.length === 0) {
+                showToast('⚠️ Aucune arrivée à exporter !', 'warning');
+                return;
+            }
+
+            try {
+                // Partie 1 : Résultats individuels
+                let csv = '=== RÉSULTATS INDIVIDUELS ===\n';
+                csv += 'Dossard,Prénom,Nom,Genre,Classe,Course,Position dans Course,Points,Classement Classe\n';
+                
+                const participantsArrivees = participants
+                    .filter(p => p.course !== null)
+                    .sort((a, b) => {
+                        if (a.course !== b.course) return a.course - b.course;
+                        return a.positionDansCourse - b.positionDansCourse;
+                    });
+
+                participantsArrivees.forEach(p => {
+                    csv += `${p.dossard},${p.prenom},${p.nom},${p.genre},${p.classe},${p.course},${p.positionDansCourse},${p.points},${p.classementClasse}\n`;
+                });
+
+                // Partie 2 : Classement des classes
+                csv += '\n=== CLASSEMENT DES CLASSES ===\n';
+                csv += 'Position,Classe,Élèves Arrivés,Total Points\n';
+
+                const classes = [...new Set(participants.map(p => p.classe))];
+                const scoresClasses = [];
+                classes.forEach(classe => {
+                    const participantsClasse = participants.filter(p => p.classe === classe && p.course !== null);
+                    if (participantsClasse.length > 0) {
+                        const totalPoints = participantsClasse.reduce((sum, p) => sum + p.points, 0);
+                        scoresClasses.push({
+                            classe: classe,
+                            elevesArrivees: participantsClasse.length,
+                            totalPoints: totalPoints
+                        });
+                    }
+                });
+
+                scoresClasses.sort((a, b) => a.totalPoints - b.totalPoints);
+                scoresClasses.forEach((c, index) => {
+                    csv += `${index + 1},${c.classe},${c.elevesArrivees},${c.totalPoints}\n`;
+                });
+
+                // Partie 3 : Détail par course
+                csv += '\n=== DÉTAIL PAR COURSE ===\n';
+                const nbCourses = Math.max(...participants.filter(p => p.course !== null).map(p => p.course));
+                
+                for (let i = 1; i <= nbCourses; i++) {
+                    const participantsCourse = participants.filter(p => p.course === i);
+                    csv += `\nCourse ${i} (${participantsCourse.length} participants)\n`;
+                    csv += 'Position,Dossard,Prénom,Nom,Classe,Points\n';
+                    
+                    participantsCourse.sort((a, b) => a.positionDansCourse - b.positionDansCourse).forEach(p => {
+                        csv += `${p.positionDansCourse},${p.dossard},${p.prenom},${p.nom},${p.classe},${p.points}\n`;
+                    });
+                }
+
+                // Télécharger le fichier
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                const date = new Date().toISOString().split('T')[0];
+                const time = new Date().toTimeString().split(' ')[0].replace(/:/g, '-');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `resultats_course_${date}_${time}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showToast('✅ Export réussi !', 'success');
+            } catch (error) {
+                console.error('Erreur export:', error);
+                showToast('❌ Erreur lors de l\'export', 'error');
+            }
+        }
+
+        function resetCourse() {
+            const totalArrivees = arrivees.length;
+            const nbCourses = courseActuelle;
+            
+            if (totalArrivees === 0) {
+                showToast('ℹ️ Aucune donnée à réinitialiser', 'warning');
+                return;
+            }
+
+            // Double confirmation pour éviter les suppressions accidentelles
+            if (!confirm(`⚠️ ATTENTION ⚠️\n\nVous allez SUPPRIMER :\n- ${totalArrivees} arrivées\n- ${nbCourses} course(s)\n- Tous les classements\n\nÊtes-vous VRAIMENT sûr ?`)) {
+                return;
+            }
+
+            // Deuxième confirmation
+            if (!confirm('Dernière confirmation : Tout supprimer ?')) {
+                showToast('ℹ️ Réinitialisation annulée', 'warning');
+                return;
+            }
+
+            participants.forEach(p => {
+                p.course = null;
+                p.positionDansCourse = null;
+                p.classementClasse = null;
+                p.points = null;
+            });
+
+            arrivees = [];
+            courseActuelle = 1;
+            arriveesParCourse = {};
+            
+            document.getElementById('courseActuelle').textContent = '1';
+            document.getElementById('arriveesCourseCourante').textContent = '0';
+            document.getElementById('totalArrivees').textContent = '0';
+            document.getElementById('pourcentage').textContent = '0%';
+            document.getElementById('derniereArrivee').classList.add('hidden');
+            updateClassements();
+
+            showToast('✅ Réinitialisation effectuée', 'success');
+            document.getElementById('dossardInput').focus();
+        }
+
+        // Protection contre la fermeture accidentelle
+        window.addEventListener('beforeunload', function(e) {
+            if (arrivees.length > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+
+        // Gestionnaires d'événements pour les boutons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enregistrement du Service Worker pour PWA
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('./service-worker.js')
+                        .then(function(registration) {
+                            console.log('✅ Service Worker enregistré avec succès:', registration.scope);
+                            
+                            // Vérifier si le Service Worker est actif
+                            if (registration.active) {
+                                console.log('✅ Service Worker ACTIF - Mode hors ligne disponible');
+                            }
+                            
+                            // Écouter les mises à jour
+                            registration.addEventListener('updatefound', function() {
+                                console.log('🔄 Mise à jour du Service Worker détectée');
+                            });
+                        })
+                        .catch(function(error) {
+                            console.error('❌ Échec enregistrement Service Worker:', error);
+                        });
+                });
+            } else {
+                console.warn('⚠️ Service Worker non supporté par ce navigateur');
+            }
+
+            // Bouton Nouvelle Course
+            const btnNouvelleCourse = document.getElementById('btnNouvelleCourse');
+            if (btnNouvelleCourse) {
+                btnNouvelleCourse.addEventListener('click', nouvelleCourse);
+                btnNouvelleCourse.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    nouvelleCourse();
+                });
+            }
+
+            // Bouton Export
+            const btnExport = document.getElementById('btnExport');
+            if (btnExport) {
+                btnExport.addEventListener('click', exportResults);
+                btnExport.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    exportResults();
+                });
+            }
+
+            // Bouton Reset
+            const btnReset = document.getElementById('btnReset');
+            if (btnReset) {
+                btnReset.addEventListener('click', resetCourse);
+                btnReset.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    resetCourse();
+                });
+            }
+
+            // Auto-focus sur le champ de saisie
+            setTimeout(() => {
+                const input = document.getElementById('dossardInput');
+                if (input) {
+                    input.focus();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
